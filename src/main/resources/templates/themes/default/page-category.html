@@ -1,6 +1,15 @@
 #include('./partial/header.html', {title: keyword })
 <div class="main-content common-page clearfix">
     <div class="categorys-item">
+        <div style="margin: 10px">
+            全部分类：
+            #for(c : categories)
+            <a style="cursor: pointer" class="cate" val="${c.name}">${c.name}
+                (${c.count})
+            </a>
+            #end
+        </div>
+
         <div class="common-title">
             ${type}：${keyword}
         </div>
@@ -32,4 +41,11 @@
         #end
     </div>
 </div>
+<script type="text/javascript">
+    $('.cate').click(function () {
+        var ca = $(this).attr("val");
+        var url=window.location.href;
+        window.location.href=url.substring(0,url.lastIndexOf("/"))+'/'+ca;
+    });
+</script>
 #include('./partial/footer.html')

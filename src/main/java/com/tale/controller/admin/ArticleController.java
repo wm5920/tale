@@ -10,6 +10,7 @@ import com.blade.validator.annotation.Valid;
 import com.tale.controller.BaseController;
 import com.tale.exception.TipException;
 import com.tale.extension.Commons;
+import com.tale.init.TaleConst;
 import com.tale.model.dto.LogActions;
 import com.tale.model.dto.Types;
 import com.tale.model.entity.Contents;
@@ -19,10 +20,12 @@ import com.tale.model.entity.Users;
 import com.tale.service.ContentsService;
 import com.tale.service.MetasService;
 import com.tale.service.SiteService;
+import com.tale.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Optional;
+
 
 /**
  * 文章管理控制器
@@ -51,10 +54,24 @@ public class ArticleController extends BaseController {
      */
     @GetRoute(value = "")
     public String index(@Param(defaultValue = "1") int page, @Param(defaultValue = "15") int limit,
-                        Request request) {
-
-        Page<Contents> articles = new Contents().where("type", Types.ARTICLE).page(page, limit, "created desc");
+                        Request request,@Param boolean hits,@Param String title,@Param String category) {
+        Contents ct=new Contents();
+//        String sql="select * from t_contents where 1=1";
+//        System.out.println(ct.query(sql));
+//        if(StringKit.isNotBlank(title)){
+//            sql+=" and title likes '%"+title+"'%";
+//        }
+//        if(StringKit.isNotBlank(category)){
+//            sql+=" and categories = '"+category+"'";
+//        }
+//        Page<Contents> articles=ct.query(sql).page(page, limit,hits?"hits desc":"created desc");
+        Page<Contents> articles=ct.like("title", '%'+StringUtils.get(title)+'%').like("categories",'%'+StringUtils.get(category)+'%').page(page, limit,hits?"hits desc":"created desc");
         request.attribute("articles", articles);
+        List<Metas>   categories = siteService.getMetas(Types.RECENT_META, Types.CATEGORY, TaleConst.MAX_POSTS);
+        request.attribute("categories", categories);
+        request.attribute("hits",hits);
+        request.attribute("title",title);
+        request.attribute("category",category);
         return "admin/article_list";
     }
 

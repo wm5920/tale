@@ -13,6 +13,7 @@ import com.tale.model.entity.Contents;
 import com.tale.model.entity.Metas;
 import com.tale.service.ContentsService;
 import com.tale.service.MetasService;
+import com.tale.service.SiteService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -34,7 +35,8 @@ public class CategoryController extends BaseController {
 
     @Inject
     private MetasService metasService;
-
+    @Inject
+    private SiteService siteService;
     /**
      * 分类列表页
      *
@@ -68,7 +70,8 @@ public class CategoryController extends BaseController {
         if (null == metaDto) {
             return this.render_404();
         }
-
+        List<Metas>   categories = siteService.getMetas(Types.RECENT_META, Types.CATEGORY, TaleConst.MAX_POSTS);
+        request.attribute("categories", categories);
         Page<Contents> contentsPage = contentsService.getArticles(metaDto.getMid(), page, limit);
         request.attribute("articles", contentsPage);
         request.attribute("meta", metaDto);

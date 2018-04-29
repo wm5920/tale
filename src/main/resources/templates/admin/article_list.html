@@ -4,6 +4,34 @@
         <h4 class="page-title">文章管理</h4>
     </div>
     <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <form  class="form-inline" role="form">
+                    <div class="form-group">
+                        <input type="text" class="form-control" value="${title ?! ''}" id="title" placeholder="请输入文章标题">
+                    </div>
+                    <div class="form-group">
+                        <label >分类列表</label>
+                        <select class="form-control" id="category" >
+                            <option></option>
+                            #for(me : categories)
+                            <option value="${me.name}" #if(null !=category && exist_cat(me, category)) selected #end>${me.name}</option>
+                            #end
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input id="hits" type="checkbox"  #if(hits) checked #end>浏览量优先
+                        </label>
+                    </div>
+                    <button id="search-btn" type="button"
+                            class="btn btn-success waves-effect waves-light m-l-10">查询
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12">
         <table class="table table-striped table-bordered">
             <thead>
             <tr>
@@ -48,7 +76,30 @@
             #end
             </tbody>
         </table>
-        #call pageAdminNav(articles)
+        <!--#call pageAdminNav(articles)-->
+        <div class="clearfix"></div>
+        <ul class="pagination m-b-5 pull-right">
+            #if(articles.hasPrevPage)
+            <li>
+                <a class="pageBtn" val="${articles.prevPage}" aria-label="Previous">
+                    <i class="fa fa-angle-left"></i>&nbsp;上一页
+                </a>
+            </li>
+            #end
+
+            #for(nav : articles.navPageNums)
+            <li #if(nav== articles.pageNum) class="active" #end><a class="pageBtn" val="${nav}" >${nav}</a></li><!--href="?page=${nav}"-->
+            #end
+
+            #if(articles.hasNextPage)
+            <li>
+                <a class="pageBtn" val="${articles.nextPage}" aria-label="Next"><!--href="page=${articles.nextPage}"-->
+                    下一页&nbsp;<i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+            #end
+            <li><span>共${articles.totalPages}页</span></li>
+        </ul>
     </div>
 </div>
 
@@ -74,6 +125,45 @@
            }
         });
     }
+    $('#search-btn').click(function () {
+        var hits = $("#hits").is(':checked');//on off
+        var title = $('#title').val();
+        var category = $('#category').val();
+        console.log('查询',hits,title,category);
+        if(window.location.href.indexOf("?")!=-1){
+            var askIndex=window.location.href.indexOf("?");
+            var params=window.location.href.substring(askIndex+1);
+            var baseUrl=window.location.href.substring(0,askIndex);
+            var ary=params.split("&");
+            var params1="";
+            for(var i in ary){
+                if(ary[i].indexOf("page")!=-1)
+                    params1=params1+ary[i]+"&";
+            }
+            window.location.href=baseUrl+"?"+params1+'hits='+hits+'&title='+title+'&category='+category;
+        }else{
+            window.location.href='?hits='+hits+'&title='+title+'&category='+category;
+        }
+    });
+
+    $('.pageBtn').click(function () {
+        var nowPage=$(this).attr("val");
+        console.log('.pageBtn',nowPage);
+        if(window.location.href.indexOf("?")!=-1){
+            var askIndex=window.location.href.indexOf("?");
+            var params=window.location.href.substring(askIndex+1);
+            var baseUrl=window.location.href.substring(0,askIndex);
+            var ary=params.split("&");
+            var params1="";
+            for(var i in ary){
+                if(ary[i].indexOf("page")==-1)
+                    params1=params1+ary[i]+"&";
+            }
+            window.location.href=baseUrl+"?"+params1+"page="+nowPage;
+        }else{
+            window.location.href=window.location.href+"?page="+nowPage;
+        }
+    });
 </script>
 
 </body>

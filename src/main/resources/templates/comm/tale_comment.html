@@ -39,9 +39,12 @@
     }
 
     function addCommentInputValue() {
-        document.getElementById('author').value = getCommentCookie('tale_remember_author');
-        document.getElementById('mail').value = getCommentCookie('tale_remember_mail');
-        document.getElementById('url').value = getCommentCookie('tale_remember_url');
+        if(document.getElementById('author')!=null)
+            document.getElementById('author').value = getCommentCookie('tale_remember_author');
+        if(document.getElementById('mail')!=null)
+            document.getElementById('mail').value = getCommentCookie('tale_remember_mail');
+        if(document.getElementById('url')!=null)
+            document.getElementById('url').value = getCommentCookie('tale_remember_url');
     }
 
     addCommentInputValue();
